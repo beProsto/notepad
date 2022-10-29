@@ -1,2 +1,6 @@
+# So that the modules don't take up repostitory space
+# The user can just run `npm install`
 node_modules
 package-lock.json
+# We don't want to pollute the repo with builds
+public
