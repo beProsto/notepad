@@ -28,6 +28,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Build
+        run: npm run build
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Pages
