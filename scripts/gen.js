@@ -52,10 +52,49 @@ module.exports = {
 		});
 		console.log("___");
 		
+		function allIndexOf(str, toSearch) {
+			var indices = [];
+			for(var pos = str.indexOf(toSearch); pos !== -1; pos = str.indexOf(toSearch, pos + 1)) {
+				indices.push(pos);
+			}
+			return indices;
+		}
+
+		function loadElement(code) {
+			let codePro = "";
+			
+			let lastIndex = 0;
+
+			const indices = allIndexOf(code, "<import ");
+			indices.forEach(i => {
+				let srcI = code.indexOf("src", i);
+				srcI = code.indexOf("=", srcI);
+				srcI = code.indexOf("\"", srcI);
+				srcI += 1;
+				const srcE = code.indexOf("\"", srcI);
+				const filename = code.slice(srcI, srcE);
+				console.log("- -> imported", filename);
+
+				const end = code.indexOf("/>", srcE);
+
+				codePro += code.slice(lastIndex, i);
+
+				const elCode = fs.readFileSync(path.join(sourceDirectoryPath, filename), "utf-8");
+				codePro += loadElement(elCode);
+
+				lastIndex = end+2;
+			});
+			codePro += code.substring(lastIndex, code.length);
+			
+			return codePro;
+		}
+
 		function parsePage(pageFilename) {
-			const pageCodePre = fs.readFileSync(pageFilename);
-		
-			return pageCodePre;
+			const pageCodePre = fs.readFileSync(pageFilename, "utf-8");
+
+			const pageCodePro = loadElement(pageCodePre);
+
+			return pageCodePro;
 		}
 		
 		function templatePage(pageFilename) {
@@ -77,7 +116,7 @@ module.exports = {
 			let pageName = path.relative(sourceDirectoryPath, pageFilename);
 			pageName = path.join(publicDirectoryPath, pageName);
 			pageName = pageName.replace("page.html", "index.html");
-			console.log(pageName);
+			console.log("->", pageName);
 			makeDirFor(pageName);
 			fs.writeFileSync(pageName, templatePage(pageFilename));
 		}
