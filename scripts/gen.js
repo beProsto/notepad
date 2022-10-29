@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { exit } = require('process');
 
 const sourceDirectoryPath = path.join(__dirname, '..', 'src');
 const publicDirectoryPath = path.join(__dirname, '..', 'public');
@@ -9,7 +10,7 @@ module.exports = {
 	sourceDirectoryPath,
 	publicDirectoryPath,
 	templateDirectoryPath,
-	build: () => {
+	build: (dev = false) => {
 		const pageTemplate = fs.readFileSync(path.join(templateDirectoryPath, "index.html"), 'utf-8');
 
 		function findFiles(where) {
@@ -72,15 +73,27 @@ module.exports = {
 				srcI = code.indexOf("\"", srcI);
 				srcI += 1;
 				const srcE = code.indexOf("\"", srcI);
+
 				const filename = code.slice(srcI, srcE);
-				console.log("- -> imported", filename);
 
 				const end = code.indexOf("/>", srcE);
 
 				codePro += code.slice(lastIndex, i);
 
-				const elCode = fs.readFileSync(path.join(sourceDirectoryPath, filename), "utf-8");
-				codePro += loadElement(elCode);
+				try {
+					const elCode = fs.readFileSync(path.join(sourceDirectoryPath, filename), "utf-8");
+					codePro += loadElement(elCode);
+					console.log("- -> imported", filename);
+				}
+				catch(err) {
+					console.error(`- -> file couldn't load: ${filename}`);
+					if(!dev) {
+						exit(1);
+					}
+					else {
+						codePro += `<p class="error">File couldn't load: ${filename}</p>`;
+					}
+				}
 
 				lastIndex = end+2;
 			});
@@ -106,7 +119,7 @@ module.exports = {
 		function makeDirFor(filePath) {
 			const dirname = path.dirname(filePath);
 			if(fs.existsSync(dirname)) {
-			return true;
+				return true;
 			}
 			makeDirFor(dirname);
 			fs.mkdirSync(dirname);
@@ -121,6 +134,29 @@ module.exports = {
 			fs.writeFileSync(pageName, templatePage(pageFilename));
 		}
 		
+		console.log("Cleaning step:");
+		try {
+			fs.rmSync(publicDirectoryPath, { recursive: true });
+			console.log("-> cleaned", publicDirectoryPath);
+		}
+		catch(err) {
+			console.error("-> error while cleaning", publicDirectoryPath);
+		}
+		console.log("___");
+
+
+		console.log("Copying step:");
+		sourceFilenames.forEach(filename => {
+			if(!filename.endsWith(".html")) {
+				let fname = path.relative(sourceDirectoryPath, filename);
+				fname = path.join(publicDirectoryPath, fname);
+				console.log("->", fname);
+				makeDirFor(fname);
+				fs.copyFileSync(filename, fname);
+			}
+		});
+		console.log("___");
+
 		console.log("Pages built:");
 		pageFilenames.forEach(pageFilename => {
 			buildPage(pageFilename);

@@ -1,3 +1,20 @@
-<h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
-<import src="element.html"/>
-<h1>I <3 you all</h1>
+<head>
+	<title>bP's Notepad</title>
+	<style>
+		.container {
+			position: absolute;
+			--margin: 20px;
+			left: var(--margin); 
+			top: var(--margin);
+			width: calc(100% - var(--margin));
+			height: calc(100% - var(--margin));
+		}
+	</style>
+</head>
+<body>
+	<import src="com/bg.html"/>
+	
+	<div class="container">
+		<import src="navbar.html"/>
+	</div>
+</body>
