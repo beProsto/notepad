@@ -1,7 +1,9 @@
 const gen = require('./gen');
-const fs = require('fs');
+const chokidar = require('chokidar');
 
-fs.watch(gen.sourceDirectoryPath, "recursive" (eventType, filename) => {
-	console.log("\nThe file", filename, "was modified!");
-	console.log("The type of change was:", eventType);
-})
+chokidar.watch(gen.sourceDirectoryPath).on('all', (event, path) => {
+	console.log("Dev action detected: ", event, path);
+	if(event == "change") {
+		gen.build();
+	}
+});

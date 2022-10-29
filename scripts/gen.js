@@ -11,8 +11,7 @@ module.exports = {
 	templateDirectoryPath,
 	build: () => {
 		const pageTemplate = fs.readFileSync(path.join(templateDirectoryPath, "index.html"), 'utf-8');
-		console.log(pageTemplate);
-		
+
 		function findFiles(where) {
 			let list = [];
 			const files = fs.readdirSync(where);
