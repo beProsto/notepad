@@ -1,5 +1,10 @@
 <style>
-
+	button {
+		width: 70px;
+		height: 46px;
+		text-align: center;
+		padding: 3px 0 0 0;
+	}
 </style>
 
 <script>

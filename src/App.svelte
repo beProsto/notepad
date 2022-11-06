@@ -90,7 +90,7 @@
 		<button class="EmojiButton"> 🏳️‍🌈 </button>
 	</div>
 	<div class="BarElem"> 
-		<h1>Notes from beProsto</h1>
+		<h2>Notepad by beProsto</h2>
 	</div>
 	<div class="BarElem HideOnMobile">
 		<button class="EmojiButton" on:click={splitState}> 🦊 </button>
