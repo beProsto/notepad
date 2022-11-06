@@ -6,7 +6,6 @@ export const load = (name, std="") => {
 		localStorage.setItem(valName, std);
 	}
 	return localStorage.getItem(valName);
-	
 };
 export const save = (name, val) => {
 	const initName = "__ezs_" + name + "_init";

@@ -6,7 +6,7 @@
 		margin: 0;
 		width: 100%;
 		height: 100%;
-		background: black;
+		/* background: black; */
 	}
 
 	textarea {
@@ -16,32 +16,31 @@
 		border-radius: 5px;
 		border-width: 0;
 		border-image: none;
-		border: 2px gray solid;
+		border: 2px rgb(120, 0, 120) solid;
 		margin: 0;
 		outline: none;
 
+		background: #2c2c2c;
+
 		width: calc(100% - 14px);
 		height: calc(100% - 14px);
+
+		font-family: 'Courier New', Courier, monospace;
 	}
 </style>
 
 <script>
-	export let filename;
+	export let userInput;
 
-	import { load, save } from "./lib/ezstore";
-
-	const filenameId = filename + "_code";
-
-	let user_input = load(filenameId);
+    import { getContext } from "svelte";
+	
+	const saveInput = getContext("saveInput");
 
 	const processInput = (e) => {
-		// if there's a connection to a server we should prolly do something about it here
-		// also just changing the localstorage
-		save(filenameId, user_input);
+		saveInput(userInput);
 	};
-
 </script>
 
 <div id="m_editor">
-	<textarea spellcheck="false" autocomplete="true" on:change={processInput} bind:value={user_input}></textarea>
+	<textarea spellcheck="false" autocomplete="true" on:change={processInput} bind:value={userInput}></textarea>
 </div>

@@ -12,7 +12,6 @@
 		let {state, prevState} = toggleState();
 		toChangeTo = prevState;
 	};
-
 </script>
 
 <button on:click={onclick}>{toChangeTo} Mode</button>
