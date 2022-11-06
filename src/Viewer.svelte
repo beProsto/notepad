@@ -1,5 +1,5 @@
 <style>
-	#m_editor {
+	#m_viewer {
 		position: relative;
 		left: 0;
 		top: 0;
@@ -9,7 +9,7 @@
 		background: black;
 	}
 
-	textarea {
+	#m_content {
 		resize: none;
 		border: none none solid;
 		padding: 5px 5px;
@@ -22,26 +22,34 @@
 
 		width: calc(100% - 14px);
 		height: calc(100% - 14px);
+
+		overflow-y: auto;
+		overflow-x: auto;
 	}
 </style>
 
 <script>
 	export let filename;
-
-	import { load, save } from "./lib/ezstore";
-
+	
+	import {load, save} from "./lib/ezstore";
+	
 	const filenameId = filename + "_code";
+	
+	const textToParse = load(filenameId, "# Hello, world!");
 
-	let user_input = load(filenameId);
+	let outputText = "";
 
-	const processInput = (e) => {
-		// if there's a connection to a server we should prolly do something about it here
-		// also just changing the localstorage
-		save(filenameId, user_input);
-	};
-
+	let lines = textToParse.split('\n')
+	for(let line of lines) {
+		if(line[0] == "#") {
+			outputText+="Header<br>";
+		}
+		else {
+			outputText+="Usual<br>"
+		}
+	}
 </script>
 
-<div id="m_editor">
-	<textarea spellcheck="false" autocomplete="true" on:change={processInput} bind:value={user_input}></textarea>
+<div id="m_viewer">
+	<div id="m_content">{@html outputText}</div>
 </div>
