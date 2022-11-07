@@ -21,7 +21,8 @@
         flex-direction: column;
 	}
 	@media only screen and (max-width: 480px) {
-		nav {
+        #NavBar {
+		    top: 85px;
 			width: calc(100vw - 24px);
 		}
 	}
@@ -43,6 +44,11 @@
     }
     .text {
         width: 68%;
+    }
+	@media only screen and (max-width: 480px) {
+        .text {
+            width: 55%;
+        }
     }
 
 </style>
