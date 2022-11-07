@@ -30,17 +30,10 @@
 	.RightElem {
 		margin-left: auto;
 	}
-
 	@media only screen and (max-width: 480px) {
 		.HideOnMobile {
 			display: none;
 		}
-	}
-
-	.EmojiButton {
-		font-size: 30px;
-		margin: 0;
-		padding: 6px 5px 0px 5px;
 	}
 </style>
 
@@ -50,10 +43,11 @@
 	import Editor from "./Editor.svelte";
 	import Viewer from "./Viewer.svelte";
 	import Switch from "./Switch.svelte";
-
+	import Nav from "./Nav.svelte";
 
 	import {load, save} from "./lib/ezstore";
 	
+	// File to edit
 	const filename = "a";
 	const filenameId = filename + "_code";
 
@@ -63,6 +57,7 @@
 		save(filenameId, userInput);
 	});
 
+	// "State machine" - what's displayed rn
 	let state = "Viewer";
 	let prevState = "Editor";
 	const toggleState = () => {
@@ -81,13 +76,12 @@
 	setContext("state", state);
 	setContext("prevState", prevState);
 	setContext("toggleState", toggleState);
-
 </script>
 
 
 <div id="TopBar">
 	<div class="BarElem"> 
-		<button class="EmojiButton"> 🏳️‍🌈 </button>
+		<Nav/>
 	</div>
 	<div class="BarElem"> 
 		<h2>Notepad by beProsto</h2>
@@ -114,5 +108,3 @@
 		</div>
 	{/if}
 </div>
-
-
