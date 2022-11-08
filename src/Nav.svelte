@@ -28,10 +28,20 @@
 	}
 
     .entryButton {
+        text-align: left;
+        height: 40px;
+        width: calc(100% - 80px);
+    }
+    .deleteButton {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+    }
+    .entry {
         width: calc(100% - 20px);
         margin: 5px 10px;
-        text-align: left;
     }
+
     #EntryList {
         overflow-y: auto;
         width: 100%;
@@ -77,6 +87,13 @@
     function gotoEntry(n) {
         console.log(n);
     }
+    function delEntry(n) {
+        const entryToYeet = entries.findIndex((name) => n == name);
+
+        entries.splice(entryToYeet, 1);
+
+        entries = entries;
+    }
 </script>
 
 
@@ -91,7 +108,10 @@
             </form>
             <div id="EntryList">
                 {#each entries as entry}
-                    <button class="entryButton" on:click={() => gotoEntry(entry)}>{entry}</button>
+                    <div class="entry">
+                        <button class="deleteButton" on:click={() => delEntry(entry)}>🗑️</button>
+                        <button class="entryButton" on:click={() => gotoEntry(entry)}>{entry}</button>
+                    </div>
                 {/each}
             </div>
         </nav>
