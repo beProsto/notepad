@@ -37,9 +37,23 @@
 		let output = "";
 		let lines = input.split('\n')
 		let prevline = "";
+		let isCode = false;
+		let codeLang = "";
 		for(let line of lines) {
+			// if parsing code
+			if(isCode) {
+				if(line.slice(0, 3) == "```") {
+					isCode = false;
+					codeLang = "";
+
+					output += "</div>";
+				}
+				else {
+					output += line;
+				}
+			}
 			// if there's two consecutive breaklines, we have a breakline 
-			if(line == "" && prevline == "") {
+			else if(line == "" && prevline == "") {
 				output += "<br/>"
 			}
 			// if there's at least one pound symbol, we know it's a header
@@ -54,6 +68,14 @@
 				output += "<h"+headerLevel+" style=\"margin: 15px 0px;\">";
 				output += line.substring(headerLevel, line.length);
 				output += "</h"+headerLevel+">";
+			}
+			// if there are 3 ` signs at the beginning of a line we start parsing it all as code
+			else if(line.slice(0, 3) == "```") {
+				isCode = true;
+				codeLang = line.slice(3, line.length);
+				console.log("started parsing '", codeLang, "' code");
+
+				output += "<div class=\"CodeBox\">";
 			}
 			// otherwise make it a paragraph
 			else {
