@@ -45,17 +45,54 @@
 	import Switch from "./Switch.svelte";
 	import Nav from "./Nav.svelte";
 
-	import {load, save} from "./lib/ezstore";
-	
-	// File to edit
-	const filename = "a";
-	const filenameId = filename + "_code";
+	import {load, save, connectStorage} from "./lib/ezstore";
 
-	let userInput = load(filenameId, "# Hello, world!");
+	const assumeHref = (window.location.protocol == "http:" ? "ws://" : "wss://") + window.location.hostname + ":42069";
+	// const assumeHref = "ws://localhost:90";
+	console.log(assumeHref);
+
+
+	let userInput = "### Connecting to the vault, please wait...";
+
+	// These values will be updated as we change 
+	let filename = "this App is still loading";
+	function getFilenameId(name) {
+		const fnid = name + "_code";
+		load(fnid, "# Hello, " + name + "!").then(res => {
+			userInput = res;
+		});
+		return fnid;  
+	}
+	$: filenameId = getFilenameId(filename);
+
+	// Some global functions
 	setContext("saveInput", (txt) => {
 		userInput = txt;
 		save(filenameId, userInput);
+		console.log("Saving", filename, "as", filenameId);
 	});
+	setContext("addEntry", (name) => {
+		userInput = txt;
+		save(filenameId, userInput);
+		console.log("Saving", filename, "as", filenameId);
+	});
+	function finishLoad() {
+		load(filenameId, "# Hello, world!").then(res => {
+			userInput = res;
+		});
+	}
+
+	// Try to connect to a remote vault
+	filename = "Note";
+	const connStatus = connectStorage(assumeHref, "SpecialVault");
+	connStatus.onerror = () => {
+		alert("Couldn't connect to designated websocket server!");
+		finishLoad();
+	};
+	connStatus.onopen = () => {
+		console.log("Connected succesfully! :flushed:");
+		finishLoad();
+	};
 
 	// "State machine" - what's displayed rn
 	let state = "Viewer";
@@ -76,12 +113,19 @@
 	setContext("state", state);
 	setContext("prevState", prevState);
 	setContext("toggleState", toggleState);
+
+	// prevent dialogue window from popping up upon ctrl+s
+	window.onkeydown = (e) => {
+		if(e.ctrlKey && (e.key == "s" || e.key == "S")) {
+			e.preventDefault();
+		}
+	};
 </script>
 
 
 <div id="TopBar">
 	<div class="BarElem"> 
-		<Nav/>
+		<Nav bind:filename={filename} />
 	</div>
 	<div class="BarElem"> 
 		<h2>Notepad by beProsto</h2>

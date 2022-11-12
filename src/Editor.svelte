@@ -42,5 +42,5 @@
 </script>
 
 <div id="m_editor">
-	<textarea spellcheck="false" autocomplete="true" on:change={processInput} bind:value={userInput}></textarea>
+	<textarea spellcheck="false" autocomplete="true" bind:value={userInput} on:input={processInput}></textarea>
 </div>

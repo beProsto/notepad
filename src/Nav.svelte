@@ -64,18 +64,16 @@
 </style>
 
 <script>
+	export let filename;
+
     let navBarVisible = false;
     function toggleNavBar() {
         navBarVisible = !navBarVisible;
     }
 
-
     let entries = [];
     entries.push(
-        "First Note",
-        "Second Note",
-        "Third Note",
-        "Yet another Note",
+        "Note",
     );
 
     let filenameInput = "Note's Name";
@@ -85,6 +83,7 @@
     }
 
     function gotoEntry(n) {
+		filename = n;
         console.log(n);
     }
     function delEntry(n) {
