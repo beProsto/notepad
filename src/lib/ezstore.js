@@ -50,6 +50,8 @@ function remoteSave(name, val) {
 	wsocket.send(JSON.stringify(composedQuery));
 }
 
+let theList = [];
+
 // File List Operations
 function localList() {
 	const initName = "__list_ezs_" + wsocket.vault + "_init";
@@ -58,7 +60,8 @@ function localList() {
 		localStorage.setItem(initName, "true");
 		localStorage.setItem(valName, JSON.stringify(["FirstNote"]));
 	}
-	return localStorage.getItem(valName);
+	theList = JSON.parse(localStorage.getItem(valName))
+	return list;
 }
 function localAdd(entry) {
 

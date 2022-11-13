@@ -86,7 +86,7 @@
 	filename = "Note";
 	const connStatus = connectStorage(assumeHref, "SpecialVault");
 	connStatus.onerror = () => {
-		alert("Couldn't connect to designated websocket server!");
+		console.warn("Couldn't connect to designated websocket server!");
 		finishLoad();
 	};
 	connStatus.onopen = () => {
