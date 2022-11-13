@@ -5,6 +5,8 @@ const wsinfo = { opened: false, url: "", vault: "" };
 
 const updates = { onfile: (file, content)=>{}, ondir: ()=>{} };
 
+// File operations
+
 function localLoad(name, std) {
 	const initName = "__ezs_" + name + "_init";
 	const valName = "__ezs_" + name + "_val";
@@ -48,6 +50,33 @@ function remoteSave(name, val) {
 	wsocket.send(JSON.stringify(composedQuery));
 }
 
+// File List Operations
+function localList() {
+	const initName = "__list_ezs_" + wsocket.vault + "_init";
+	const valName = "__list_ezs_" + wsocket.vault + "_val";
+	if(!localStorage.getItem(initName)) {
+		localStorage.setItem(initName, "true");
+		localStorage.setItem(valName, JSON.stringify(["FirstNote"]));
+	}
+	return localStorage.getItem(valName);
+}
+function localAdd(entry) {
+
+}
+function localDel(entry) {
+
+}
+
+function remoteList() {
+
+}
+function remoteAdd(entry) {
+
+}
+function remoteDel(entry) {
+
+}
+
 // File Operations
 export const load = async(name, std="") => {
 	if(wsinfo.opened == false) {
@@ -68,26 +97,26 @@ export const save = async(name, val) => {
 // FileList Operations
 export const list = async() => {
 	if(wsinfo.opened == false) {
-		// return localList();
+		return localList();
 	}
 	else {
-		// return await remoteList();
+		return await remoteList();
 	}
 };
 export const add = async(entry) => {
 	if(wsinfo.opened == false) {
-		// return localAdd(entry);
+		return localAdd(entry);
 	}
 	else {
-		// return await remoteAdd(entry);
+		return await remoteAdd(entry);
 	}
 };
 export const del = async(entry) => {
 	if(wsinfo.opened == false) {
-		// return localDel(entry);
+		return localDel(entry);
 	}
 	else {
-		// return await remoteDel(entry);
+		return await remoteDel(entry);
 	}
 };
 
