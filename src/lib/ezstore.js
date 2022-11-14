@@ -3,7 +3,7 @@
 let wsocket = null;
 const wsinfo = { opened: false, url: "", vault: "" };
 
-const updates = { onfile: (file, content)=>{}, ondir: ()=>{} };
+const updates = { onfile: (file, content)=>{}, onlist: ()=>{} };
 
 // File operations
 
@@ -59,7 +59,7 @@ function localList() {
 
 	if(!localStorage.getItem(initName)) {
 		localStorage.setItem(initName, "true");
-		localStorage.setItem(valName, JSON.stringify(["FirstNote"]));
+		localStorage.setItem(valName, JSON.stringify(["First Local Note"]));
 	}
 
 	fileList = JSON.parse(localStorage.getItem(valName))
@@ -100,27 +100,59 @@ function localDel(entry) {
 
 	localStorage.setItem(valName, JSON.stringify(fileList));
 	
-	const valuesInitName = "__ezs_" + entry + "_init";
-	const valuesValName = "__ezs_" + entry + "_val";
+	// const valuesInitName = "__ezs_" + entry + "_init";
+	// const valuesValName = "__ezs_" + entry + "_val";
 
-	console.log(localStorage.length);
-	localStorage.removeItem(valuesInitName);
-	console.log(localStorage.length);
-	localStorage.removeItem(valuesValName);
-	console.log(localStorage.length);
+	// console.log(localStorage.length);
+	// localStorage.removeItem(valuesInitName);
+	// console.log(localStorage.length);
+	// localStorage.removeItem(valuesValName);
+	// console.log(localStorage.length);
 	
 
 	return fileList;
 }
 
 function remoteList() {
+	return new Promise(resolve => {
+		const composedQuery = {
+			action: "list"
+		};
 
+		wsocket.send(JSON.stringify(composedQuery));
+		
+		updates.onlist = () => {
+			resolve(fileList);
+		};
+	});
 }
 function remoteAdd(entry) {
+	return new Promise(resolve => {
+		const composedQuery = {
+			action: "add",
+			entry: entry
+		};
 
+		wsocket.send(JSON.stringify(composedQuery));
+		
+		updates.onlist = () => {
+			resolve(fileList);
+		};
+	});
 }
 function remoteDel(entry) {
+	return new Promise(resolve => {
+		const composedQuery = {
+			action: "del",
+			entry: entry
+		};
 
+		wsocket.send(JSON.stringify(composedQuery));
+		
+		updates.onlist = () => {
+			resolve(fileList);
+		};
+	});
 }
 
 // File Operations
@@ -223,7 +255,10 @@ export const connectStorage = (url, vault) => {
 		}
 		if(msg.action == "list") {
 			console.log(msg.list);
-
+			
+			fileList = msg.list;
+			
+			updates.onlist();
 		}
 	};
 	wsocket.onclose = (event) => {
