@@ -50,24 +50,67 @@ function remoteSave(name, val) {
 	wsocket.send(JSON.stringify(composedQuery));
 }
 
-let theList = [];
+let fileList = [];
 
 // File List Operations
 function localList() {
-	const initName = "__list_ezs_" + wsocket.vault + "_init";
-	const valName = "__list_ezs_" + wsocket.vault + "_val";
+	const initName = "__list_ezs_" + wsinfo.vault + "_init";
+	const valName = "__list_ezs_" + wsinfo.vault + "_val";
+
 	if(!localStorage.getItem(initName)) {
 		localStorage.setItem(initName, "true");
 		localStorage.setItem(valName, JSON.stringify(["FirstNote"]));
 	}
-	theList = JSON.parse(localStorage.getItem(valName))
-	return list;
+
+	fileList = JSON.parse(localStorage.getItem(valName))
+	
+	console.log("LIST", fileList);
+	
+	return fileList;
 }
 function localAdd(entry) {
+	const initName = "__list_ezs_" + wsinfo.vault + "_init";
+	const valName = "__list_ezs_" + wsinfo.vault + "_val";
 
+	if(!localStorage.getItem(initName)) {
+		localStorage.setItem(initName, "true");
+	}
+
+	fileList = [...fileList, entry];
+
+	console.log("ADD", fileList);
+
+	localStorage.setItem(valName, JSON.stringify(fileList));
+	
+	return fileList;
 }
 function localDel(entry) {
+	const initName = "__list_ezs_" + wsinfo.vault + "_init";
+	const valName = "__list_ezs_" + wsinfo.vault + "_val";
+	
+	if(!localStorage.getItem(initName)) {
+		localStorage.setItem(initName, "true");
+	}
 
+	const idEntryToYeet = fileList.findIndex((name) => entry == name);
+	fileList.splice(idEntryToYeet, 1);
+	fileList = fileList;
+
+	console.log("DEL", fileList);
+
+	localStorage.setItem(valName, JSON.stringify(fileList));
+	
+	const valuesInitName = "__ezs_" + entry + "_init";
+	const valuesValName = "__ezs_" + entry + "_val";
+
+	console.log(localStorage.length);
+	localStorage.removeItem(valuesInitName);
+	console.log(localStorage.length);
+	localStorage.removeItem(valuesValName);
+	console.log(localStorage.length);
+	
+
+	return fileList;
 }
 
 function remoteList() {

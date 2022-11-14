@@ -45,17 +45,18 @@
 	import Switch from "./Switch.svelte";
 	import Nav from "./Nav.svelte";
 
-	import {load, save, connectStorage} from "./lib/ezstore";
+	import {load, save, connectStorage, list, add} from "./lib/ezstore";
 
 	const assumeHref = (window.location.protocol == "http:" ? "ws://" : "wss://") + window.location.hostname + ":42069";
 	// const assumeHref = "ws://localhost:90";
 	console.log(assumeHref);
 
+	// The file content
+	let userInput = "";
 
-	let userInput = "### Connecting to the vault, please wait...";
-
-	// These values will be updated as we change 
-	let filename = "this App is still loading";
+	// These values will be updated as we change
+	// Whenever the filename changes, we load up it's appropriate content.
+	let filename = "this app is still loading";
 	function getFilenameId(name) {
 		const fnid = name + "_code";
 		load(fnid, "# Hello, " + name + "!").then(res => {
@@ -65,34 +66,43 @@
 	}
 	$: filenameId = getFilenameId(filename);
 
+	// File List
+	let filelist = [];
+
 	// Some global functions
 	setContext("saveInput", (txt) => {
 		userInput = txt;
 		save(filenameId, userInput);
 		console.log("Saving", filename, "as", filenameId);
 	});
-	setContext("addEntry", (name) => {
-		userInput = txt;
-		save(filenameId, userInput);
-		console.log("Saving", filename, "as", filenameId);
-	});
-	function finishLoad() {
-		load(filenameId, "# Hello, world!").then(res => {
-			userInput = res;
-		});
-	}
 
 	// Try to connect to a remote vault
-	filename = "Note";
 	const connStatus = connectStorage(assumeHref, "SpecialVault");
 	connStatus.onerror = () => {
 		console.warn("Couldn't connect to designated websocket server!");
-		finishLoad();
+		onConnected();
 	};
 	connStatus.onopen = () => {
 		console.log("Connected succesfully! :flushed:");
-		finishLoad();
+		onConnected();
 	};
+	function onConnected() {
+		list().then(res => {
+			filelist = res;
+			if(filelist.length > 0) {
+				finishLoad();
+			}
+			else {
+				add("New Note").then(res => {
+					filelist = res;
+					finishLoad();
+				});
+			}
+		});
+		function finishLoad() {
+			filename = filelist[0];
+		}
+	}
 
 	// "State machine" - what's displayed rn
 	let state = "Viewer";
@@ -125,7 +135,7 @@
 
 <div id="TopBar">
 	<div class="BarElem"> 
-		<Nav bind:filename={filename} />
+		<Nav bind:filename={filename} bind:filelist={filelist} />
 	</div>
 	<div class="BarElem"> 
 		<h2>Notepad by beProsto</h2>

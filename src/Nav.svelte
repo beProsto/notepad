@@ -64,34 +64,35 @@
 </style>
 
 <script>
+    import { add, del, list } from "./lib/ezstore";
+
 	export let filename;
+	export let filelist;
+
+	let freeze = false;
 
     let navBarVisible = false;
     function toggleNavBar() {
         navBarVisible = !navBarVisible;
     }
 
-    let entries = [];
-    entries.push(
-        "Note",
-    );
-
     let filenameInput = "Note's Name";
-    function onSubmit(e) {
-        e.preventDefault();
-        entries = [...entries, filenameInput];
-    }
 
     function gotoEntry(n) {
 		filename = n;
         console.log(n);
     }
+	function addEntry(e) {
+		e.preventDefault();
+		// filelist = [...filelist, filenameInput];
+		add(filenameInput).then(res => {
+			filelist = res;
+		});
+	}
     function delEntry(n) {
-        const entryToYeet = entries.findIndex((name) => n == name);
-
-        entries.splice(entryToYeet, 1);
-
-        entries = entries;
+		del(n).then(res => {
+			filelist = res;
+		});
     }
 </script>
 
@@ -101,12 +102,12 @@
 {#if navBarVisible}
     <div id="NavBar">
         <nav>
-            <form on:submit={onSubmit}>
+            <form on:submit={addEntry}>
                 <input class="text" type="text" bind:value={filenameInput}>
                 <input type="submit" value="Add">
             </form>
             <div id="EntryList">
-                {#each entries as entry}
+                {#each filelist as entry}
                     <div class="entry">
                         <button class="deleteButton" on:click={() => delEntry(entry)}>🗑️</button>
                         <button class="entryButton" on:click={() => gotoEntry(entry)}>{entry}</button>
