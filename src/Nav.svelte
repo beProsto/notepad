@@ -92,6 +92,15 @@
     function delEntry(n) {
 		del(n).then(res => {
 			filelist = res;
+			if(filelist.length > 0) {
+				filename = filelist[0];
+			}
+			else {
+				add("New Note").then(res => {
+					filelist = res;
+					filename = filelist[0];
+				});
+			}
 		});
     }
 </script>
