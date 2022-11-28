@@ -6,23 +6,26 @@ const wsinfo = { opened: false, url: "", vault: "" };
 const updates = { onfile: (file, content)=>{}, onlist: ()=>{} };
 
 // File operations
+let savedData = JSON.parse(localStorage.getItem("__fileList__") || "{}");
 
 function localLoad(name, std) {
-	const initName = "__ezs_" + name + "_init";
-	const valName = "__ezs_" + name + "_val";
-	if(!localStorage.getItem(initName)) {
-		localStorage.setItem(initName, "true");
-		localStorage.setItem(valName, std);
+	const initName = "file_" + wsinfo.vault + name + "_init";
+	const valName = "file_" + wsinfo.vault + name + "_val";
+	if(!savedData[initName]) {
+		savedData[initName] = true;
+		savedData[valName] = std;
 	}
-	return localStorage.getItem(valName);
+	return savedData[valName];
 }
 function localSave(name, val) {
-	const initName = "__ezs_" + name + "_init";
-	const valName = "__ezs_" + name + "_val";
-	if(!localStorage.getItem(initName)) {
-		localStorage.setItem(initName, "true");
+	const initName = "file_" + wsinfo.vault + name + "_init";
+	const valName = "file_" + wsinfo.vault + name + "_val";
+	if(!savedData[initName]) {
+		savedData[initName] = true;
 	}
-	localStorage.setItem(valName, val);
+	savedData[valName] = val;
+
+	localStorage.setItem("__fileList__", JSON.stringify(savedData));
 	return;
 }
 
@@ -54,63 +57,53 @@ let fileList = [];
 
 // File List Operations
 function localList() {
-	const initName = "__list_ezs_" + wsinfo.vault + "_init";
-	const valName = "__list_ezs_" + wsinfo.vault + "_val";
+	const initName = "list_" + wsinfo.vault + "_init";
+	const valName = "list_" + wsinfo.vault + "_val";
 
-	if(!localStorage.getItem(initName)) {
-		localStorage.setItem(initName, "true");
-		localStorage.setItem(valName, JSON.stringify(["First Local Note"]));
+	if(!savedData[initName]) {
+		savedData[initName] = true;
+		savedData[valName] = ["First Remote Note"];
 	}
-
-	fileList = JSON.parse(localStorage.getItem(valName))
 	
-	console.log("LIST", fileList);
+	console.log("LIST", savedData[valName]);
 	
-	return fileList;
+	return savedData[valName];
 }
 function localAdd(entry) {
-	const initName = "__list_ezs_" + wsinfo.vault + "_init";
-	const valName = "__list_ezs_" + wsinfo.vault + "_val";
+	const initName = "list_" + wsinfo.vault + "_init";
+	const valName = "list_" + wsinfo.vault + "_val";
 
-	if(!localStorage.getItem(initName)) {
-		localStorage.setItem(initName, "true");
+	if(!savedData[initName]) {
+		savedData[initName] = true;
 	}
 
-	fileList = [...fileList, entry];
+	if(savedData[valName].includes(entry)) {
+		return savedData[valName];
+	}
 
-	console.log("ADD", fileList);
+	savedData[valName] = [...savedData[valName], entry];
 
-	localStorage.setItem(valName, JSON.stringify(fileList));
-	
-	return fileList;
+	console.log("ADD", savedData[valName]);
+
+	localStorage.setItem("__fileList__", JSON.stringify(savedData));
+	return savedData[valName];
 }
 function localDel(entry) {
-	const initName = "__list_ezs_" + wsinfo.vault + "_init";
-	const valName = "__list_ezs_" + wsinfo.vault + "_val";
+	const initName = "list_" + wsinfo.vault + "_init";
+	const valName = "list_" + wsinfo.vault + "_val";
 	
-	if(!localStorage.getItem(initName)) {
-		localStorage.setItem(initName, "true");
+	if(!savedData[initName]) {
+		savedData[initName] = true;
 	}
 
-	const idEntryToYeet = fileList.findIndex((name) => entry == name);
-	fileList.splice(idEntryToYeet, 1);
-	fileList = fileList;
+	const idEntryToYeet = savedData[valName].findIndex((name) => entry == name);
+	savedData[valName].splice(idEntryToYeet, 1);
+	savedData[valName] = savedData[valName];
 
-	console.log("DEL", fileList);
+	console.log("DEL", savedData[valName]);
 
-	localStorage.setItem(valName, JSON.stringify(fileList));
-	
-	// const valuesInitName = "__ezs_" + entry + "_init";
-	// const valuesValName = "__ezs_" + entry + "_val";
-
-	// console.log(localStorage.length);
-	// localStorage.removeItem(valuesInitName);
-	// console.log(localStorage.length);
-	// localStorage.removeItem(valuesValName);
-	// console.log(localStorage.length);
-	
-
-	return fileList;
+	localStorage.setItem("__fileList__", JSON.stringify(savedData));
+	return savedData[valName];
 }
 
 function remoteList() {
