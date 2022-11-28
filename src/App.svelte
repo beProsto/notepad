@@ -137,11 +137,11 @@
 	<div class="BarElem"> 
 		<Nav bind:filename={filename} bind:filelist={filelist} />
 	</div>
-	<div class="BarElem"> 
-		<h2>Notepad by beProsto</h2>
-	</div>
 	<div class="BarElem HideOnMobile">
-		<button class="EmojiButton" on:click={splitState}> 🦊 </button>
+		<button class="EmojiButton" on:click={splitState}> {(state == "Split" ? "🐱" : "🦊")} </button>
+	</div>
+	<div class="BarElem"> 
+		<h2>{filename}</h2>
 	</div>
 	<div class="BarElem RightElem">
 		<Switch />
